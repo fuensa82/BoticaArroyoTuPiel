@@ -4,17 +4,29 @@
  */
 package com.arroyo.tupiel;
 
+import com.arroyo.GestionBD.GestionBDPacientes;
+import com.arroyo.beans.PacienteBeans;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author vpalomo
  */
 public class ListaPacientes extends javax.swing.JPanel {
 
+    private String filtro;
     /**
      * Creates new form ListaPacientes
      */
     public ListaPacientes() {
         initComponents();
+        cargaTabla();
+    }
+    public ListaPacientes(String filtro) {
+        this.filtro=filtro;
+        initComponents();
+        cargaTabla(filtro);
     }
 
     /**
@@ -26,19 +38,90 @@ public class ListaPacientes extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTablePacientes = new javax.swing.JTable();
+
+        jTablePacientes.setAutoCreateRowSorter(true);
+        jTablePacientes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Paciente", "Apellidos", "Nombre", "Fecha Nac.", "Sexo"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTablePacientes);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(61, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTablePacientes;
     // End of variables declaration//GEN-END:variables
+
+    private void cargaTabla(String filtro) {
+        ArrayList<PacienteBeans> lista;
+        if("".equals(filtro)){
+            lista=GestionBDPacientes.getListaPacientes();
+        }else{
+            lista=GestionBDPacientes.getListaPacientes(filtro);
+        }
+        cargaJTable(lista);
+    }
+
+    private void cargaTabla() {
+        ArrayList<PacienteBeans> lista=GestionBDPacientes.getListaPacientes();
+        cargaJTable(lista);
+    }
+    
+    private void cargaJTable(ArrayList<PacienteBeans> lista){
+        DefaultTableModel datosTabla = (DefaultTableModel) jTablePacientes.getModel();
+        for (int i = datosTabla.getRowCount(); i > 0; i--) {
+            datosTabla.removeRow(i - 1);
+        }
+        lista.forEach((paciente) -> {
+            datosTabla.addRow(new Object[]{
+                paciente.getIdPaciente(),
+                paciente.getApellidos(),
+                paciente.getNombre(),
+                paciente.getFechaNacimiento(),
+                paciente.getSexo()
+            });
+        });
+    }
 }

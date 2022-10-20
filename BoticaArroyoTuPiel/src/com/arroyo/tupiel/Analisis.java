@@ -4,10 +4,16 @@
  */
 package com.arroyo.tupiel;
 
+import com.arroyo.GestionBD.GestionBDEstructuraTabla;
+import com.arroyo.utils.Utils;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -33,6 +39,9 @@ public class Analisis extends javax.swing.JFrame {
         initComponents();
         jTableHistoria.getColumnModel().getColumn(0).setCellRenderer(jTableHistoria.getTableHeader().getDefaultRenderer());
         //jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("com/arroyo/multimedia/LogoFarmacia2017blancoSB.png")));
+        generaEstructuraTabla();
+        
+        
     }
 
     /**
@@ -48,7 +57,7 @@ public class Analisis extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFiltro = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableHistoria = new javax.swing.JTable();
@@ -63,8 +72,6 @@ public class Analisis extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
         jLabel3.setText("Análisis de piel - Botica Arroyo");
 
-        jTextField1.setText("jTextField1");
-
         jButton1.setText("Burcar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -74,20 +81,17 @@ public class Analisis extends javax.swing.JFrame {
 
         jTableHistoria.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "", "25/10/2022", "21/11/2022", "26/12/2022"
+                "", "", "25/10/2022", "21/11/2022", "26/12/2022", "Title 6", "Title 7"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true
+                false, false, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -101,8 +105,10 @@ public class Analisis extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTableHistoria);
         if (jTableHistoria.getColumnModel().getColumnCount() > 0) {
             jTableHistoria.getColumnModel().getColumn(0).setResizable(false);
+            jTableHistoria.getColumnModel().getColumn(0).setPreferredWidth(25);
             jTableHistoria.getColumnModel().getColumn(1).setResizable(false);
-            jTableHistoria.getColumnModel().getColumn(3).setResizable(false);
+            jTableHistoria.getColumnModel().getColumn(1).setPreferredWidth(25);
+            jTableHistoria.getColumnModel().getColumn(2).setResizable(false);
         }
 
         jLabel4.setText("Paciente seleccionado:");
@@ -126,7 +132,7 @@ public class Analisis extends javax.swing.JFrame {
                                     .addGap(29, 29, 29)
                                     .addComponent(jLabel2)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton1))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -150,7 +156,7 @@ public class Analisis extends javax.swing.JFrame {
                     .addGap(25, 25, 25)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton1))
                     .addGap(35, 35, 35)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -179,7 +185,15 @@ public class Analisis extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        JDialog frame = new JDialog(this, "Gestion de personas", true);
+        frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        ListaPacientes ventana = new ListaPacientes(jTextFiltro.getText());
+        frame.getContentPane().add(ventana);
+        frame.pack();
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+        String idPaciente="1";
+        cargaDatosPaciente(idPaciente);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -228,6 +242,17 @@ public class Analisis extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableHistoria;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextFiltro;
     // End of variables declaration//GEN-END:variables
+
+    private void cargaDatosPaciente(String idPaciente) {
+        
+    }
+
+    private void generaEstructuraTabla() {
+       HashMap<String, ArrayList> cabeceras=GestionBDEstructuraTabla.getColumnas1y2Tabla();
+       Utils.ponColumnaEnTabla(jTableHistoria,cabeceras.get("COL1"),0);
+       Utils.ponColumnaEnTabla(jTableHistoria,cabeceras.get("COL2"),1);
+        //jTableHistoria.getColumnModel().getColumn(0).
+    }
 }
